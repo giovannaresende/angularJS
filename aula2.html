@@ -33,22 +33,30 @@
 
     <script>
         angular.module("listaTelefonica", ["ngMessages"]);
-        angular.module("listaTelefonica").controller("C_listaTelefonica", function($scope){
+        angular.module("listaTelefonica").controller("C_listaTelefonica", function($scope, $http){
             $scope.app = "Lista telefonica";
-            $scope.contatos = [
-              {nome: "Pedro", telefone: "99999999", data: new Date(), operadora: {nome: "Oi", codigo: 15, categoria: "Celular"},cor: "red"},
-              {nome: "Giovanna", telefone: "66664545", operadora: {nome: "Oi", codigo: 15, categoria: "Celular"},data: new Date(), cor: "orange"},
-              {nome: "Maria", telefone: "23232121", operadora: {nome: "Oi", codigo: 15, categoria: "Celular"},data: new Date(), cor: "pink"}
-            ];
 
-            $scope.operadoras = [
-              {nome: "Oi", codigo: 1, categoria: "Celular", preco: 2},
-              {nome: "Tim", codigo: 2, categoria: "Celular", preco: 5},
-              {nome: "Vivo", codigo: 3, categoria: "Celular", preco: 6},
-              {nome: "Claro", codigo: 4, categoria: "Celular", preco: 8},
-              {nome: "GVT", codigo: 5, categoria: "Fixo", preco: 10},
-              {nome: "Embratel", codigo: 6, categoria: "Fixo", preco: 20},
-            ];
+            $scope.contatos = [];
+
+            $scope.operadoras = [];
+
+            var carregarOperadoras = function(){
+              $http.get("http://localhost/apiContatos/operadorasApi.php").then(function(res, status){
+                //console.log(res.data);
+                $scope.operadoras = res.data;
+              }, function(){
+                alert("Erro");
+              });
+            };
+
+            var carregarContatos = function(){
+                $http.get("http://localhost/apiContatos/contatosApi.php").then(function(res, status){
+                    $scope.contatos = res.data;
+                    //console.log(res.data);
+                },function(){
+                  alert("Erro");
+                });
+            };
 
             $scope.adicionarContato = function(contato){
 
@@ -83,6 +91,9 @@
                 $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
             };
 
+            carregarOperadoras();
+            carregarContatos();
+
         });
     </script>
 
@@ -102,7 +113,7 @@
             <td> <a href="" ng-click="ordenarPor('nome')"> Nome </a> </td>
             <td> <a href="" ng-click="ordenarPor('telefone')"> Telefone </a> </td>
             <td> Operadora </td>
-            <td> Data </td>
+            <!--<td> Data </td>-->
             <td></td>
           </tr>
 
@@ -112,7 +123,8 @@
               <!-- <td>{{contato.nome | uppercase}}</td> -->
               <td>{{contato.telefone}}</td>
               <td>{{contato.operadora.nome | lowercase}}</td>
-              <td>{{contato.data | date:'EEEE dd/MM/yyyy hh:mm'}}</td>
+              <!--<td>{{contato.data | date:'EEEE dd/MM/yyyy hh:mm'}}</td>-->
+
               <!--<td> <div style="width: 35px; height: 25px;" ng-style="{'background-color': contato.cor}"/> </td>-->
           </tr>
 
